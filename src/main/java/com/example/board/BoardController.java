@@ -1,5 +1,7 @@
 package com.example.board;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +20,7 @@ public class BoardController {
 
 	@Autowired
 	private PostRepository repository;
-	
+
 	/** 投稿の一覧 */
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -57,4 +59,38 @@ public class BoardController {
 		model.addAttribute("list", list);
 		return model;
 	}
+
+	/**
+	 * 編集する投稿を表示する
+	 *
+	 * @param form  フォーム
+	 * @param model モデル
+	 * @return テンプレート
+	 */
+	@RequestMapping(value = "/edit", method = RequestMethod.GET)
+	public String edit(@ModelAttribute("form") Post form, Model model) {
+		Optional<Post> post = repository.findById(form.getId());
+		model.addAttribute("form", post);
+		model = setList(model);
+		model.addAttribute("path", "update");
+		return "layout";
+	}
+
+	/**
+	 * 更新する
+	 *
+	 * @param form  フォーム
+	 * @param model モデル
+	 * @return テンプレート
+	 */
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	public String update(@ModelAttribute("form") Post form, Model model) {
+		Optional<Post> post = repository.findById(form.getId());
+		repository.saveAndFlush(PostFactory.updatePost(post.get(), form));
+		model.addAttribute("form", PostFactory.newPost());
+		model = setList(model);
+		model.addAttribute("path", "create");
+		return "layout";
+	}
+
 }

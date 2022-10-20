@@ -3,6 +3,7 @@ package com.example.board;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -57,7 +58,10 @@ public class BoardController {
 	 * @return 一覧を設定したモデル
 	 */
 	private Model setList(Model model) {
-		Iterable<Post> list = repository.findAll();
+//		Iterable<Post> list = repository.findAll();
+//		Iterable<Post> list = repository.findAllByOrderByUpdatedDateDesc();
+//		Iterable<Post> list = repository.findAll(Sort.by(Sort.Direction.DESC, "updatedDate"));
+		Iterable<Post> list = repository.findByDeletedFalseOrderByUpdatedDateDesc();
 		model.addAttribute("list", list);
 		return model;
 	}
